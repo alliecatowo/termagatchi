@@ -1,0 +1,58 @@
+# Termagatchi Items Configuration
+# Items that can be used with /feed, /clean, /play commands
+
+food:
+  kibble:
+    name: "Kibble"
+    description: "Basic pet food"
+    effects:
+      hunger: 15
+      affection: 2
+    cooldown_s: 300
+
+  premium_food:
+    name: "Premium Food"
+    description: "High quality pet food"
+    effects:
+      hunger: 25
+      happiness: 5
+      affection: 5
+    cooldown_s: 600
+
+cleaning:
+  soap:
+    name: "Soap"
+    description: "Basic cleaning soap"
+    effects:
+      hygiene: 20
+      affection: 1
+    cooldown_s: 600
+
+  shampoo:
+    name: "Shampoo"
+    description: "Premium pet shampoo"
+    effects:
+      hygiene: 35
+      happiness: 3
+      affection: 3
+    cooldown_s: 900
+
+toys:
+  ball:
+    name: "Ball"
+    description: "A simple bouncy ball"
+    effects:
+      happiness: 15
+      energy: -5
+      affection: 3
+    cooldown_s: 300
+
+  puzzle:
+    name: "Puzzle Toy"
+    description: "Mental stimulation toy"
+    effects:
+      happiness: 20
+      mood: 10
+      energy: -3
+      affection: 5
+    cooldown_s: 900

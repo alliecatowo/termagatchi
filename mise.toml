@@ -1,0 +1,4 @@
+[tools]
+pnpm = "latest"
+python = "latest"
+uv = "latest"

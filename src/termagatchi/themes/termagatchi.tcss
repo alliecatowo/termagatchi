@@ -1,0 +1,106 @@
+/* Termagatchi Theme - Dark theme with cyan accents matching the mockup */
+
+App {
+    background: #1a1a2e;
+    color: #eee;
+}
+
+/* Status bars */
+.status-panel {
+    background: #16213e;
+    border: solid #0f3460;
+    color: #eee;
+}
+
+.status-bar {
+    background: #16213e;
+    color: #eee;
+}
+
+.hunger-bar {
+    color: #ff8c42;
+}
+
+.happiness-bar {
+    color: #4caf50;
+}
+
+.energy-bar {
+    color: #ff8c42;
+}
+
+/* Main sprite area */
+.sprite-container {
+    background: #16213e;
+    border: solid #0f3460;
+    color: #ffd700;
+}
+
+/* Notifications panel */
+.notifications-panel {
+    background: #16213e;
+    border: solid #0f3460;
+    color: #eee;
+}
+
+.notification-title {
+    color: #ffd700;
+    text-style: bold;
+}
+
+/* Chat log */
+.chat-log {
+    background: #16213e;
+    border: solid #0f3460;
+    color: #eee;
+}
+
+.user-message {
+    color: #4fc3f7;
+}
+
+.pet-message {
+    color: #ffd700;
+}
+
+/* Commands panel */
+.commands-panel {
+    background: #16213e;
+    border: solid #0f3460;
+    color: #eee;
+}
+
+.command-title {
+    color: #4fc3f7;
+    text-style: bold;
+}
+
+.command-item {
+    color: #4fc3f7;
+}
+
+/* Input area */
+.input-container {
+    background: #16213e;
+    border: solid #0f3460;
+}
+
+Input {
+    background: #1a1a2e;
+    color: #eee;
+    border: solid #0f3460;
+}
+
+Input:focus {
+    border: solid #4fc3f7;
+}
+
+/* General styling */
+.title {
+    color: #ffd700;
+    text-style: bold;
+}
+
+.border-cyan {
+    border: solid #4fc3f7;
+}
