@@ -2,16 +2,16 @@
 
 import json
 from datetime import datetime
-from typing import Optional, Dict, Any
 from pathlib import Path
+from typing import Any
 
-from .models import GameState, GameConfig
+from .models import GameConfig, GameState
 
 
 class StateManager:
     """Manages game state persistence and loading."""
 
-    def __init__(self, save_dir: Optional[Path] = None):
+    def __init__(self, save_dir: Path | None = None):
         if save_dir is None:
             # Default to ~/.termagatchi/
             save_dir = Path.home() / ".termagatchi"
@@ -38,7 +38,7 @@ class StateManager:
             state_dict = self._serialize_datetimes(state_dict)
 
             # Write to file
-            with open(self.save_file, 'w', encoding='utf-8') as f:
+            with open(self.save_file, "w", encoding="utf-8") as f:
                 json.dump(state_dict, f, indent=2, ensure_ascii=False)
 
             print(f"Game saved to {self.save_file}")
@@ -51,7 +51,7 @@ class StateManager:
                 self.backup_file.rename(self.save_file)
             return False
 
-    def load_state(self) -> Optional[GameState]:
+    def load_state(self) -> GameState | None:
         """Load game state from JSON file."""
         # Try main save file first
         if self.save_file.exists():
@@ -72,10 +72,10 @@ class StateManager:
         print("No save file found, starting new game")
         return None
 
-    def _load_from_file(self, file_path: Path) -> Optional[GameState]:
+    def _load_from_file(self, file_path: Path) -> GameState | None:
         """Load state from a specific file."""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 data = json.load(f)
 
             # Deserialize datetime objects
@@ -120,14 +120,14 @@ class StateManager:
         """Create a new game state with default values."""
         return GameState()
 
-    def get_save_info(self) -> Optional[Dict[str, Any]]:
+    def get_save_info(self) -> dict[str, Any] | None:
         """Get information about the save file."""
         if not self.save_file.exists():
             return None
 
         try:
             stat = self.save_file.stat()
-            with open(self.save_file, 'r', encoding='utf-8') as f:
+            with open(self.save_file, encoding="utf-8") as f:
                 data = json.load(f)
 
             return {
@@ -136,7 +136,7 @@ class StateManager:
                 "created_at": data.get("created_at"),
                 "total_play_time_s": data.get("total_play_time_s", 0),
                 "events_count": len(data.get("events", [])),
-                "chat_count": len(data.get("chat_history", []))
+                "chat_count": len(data.get("chat_history", [])),
             }
 
         except Exception:
@@ -200,25 +200,28 @@ class GameEngine:
         stats = self.state.stats
 
         # Mood effects from low basic needs
-        if (stats.hunger < self.config.low_hunger_threshold or
-            stats.hygiene < self.config.low_hygiene_threshold):
+        if (
+            stats.hunger < self.config.low_hunger_threshold
+            or stats.hygiene < self.config.low_hygiene_threshold
+        ):
             stats.happiness = max(0, stats.happiness - self.config.mood_decay_rate)
 
         # Sickness from critical states
         critical_conditions = [
             stats.hunger < self.config.critical_hunger_threshold,
             stats.hygiene < self.config.critical_hygiene_threshold,
-            stats.energy < self.config.critical_energy_threshold
+            stats.energy < self.config.critical_energy_threshold,
         ]
 
         if any(critical_conditions):
             import random
+
             if random.random() < self.config.sickness_chance:
                 stats.health = max(0, stats.health - self.config.health_loss_sick)
                 self.state.add_event("sickness", "Pet got sick from neglect!")
                 self.state.add_notification("Termagatchi is sick!")
 
-    def command_feed(self, item_name: Optional[str] = None) -> str:
+    def command_feed(self, item_name: str | None = None) -> str:
         """Handle the /feed command."""
         from .items import ItemManager
 
@@ -245,7 +248,7 @@ class GameEngine:
 
         return f"Fed {item.name}! {item.description}"
 
-    def command_clean(self, item_name: Optional[str] = None) -> str:
+    def command_clean(self, item_name: str | None = None) -> str:
         """Handle the /clean command."""
         from .items import ItemManager
 
@@ -272,7 +275,7 @@ class GameEngine:
 
         return f"Cleaned with {item.name}! {item.description}"
 
-    def command_play(self, item_name: Optional[str] = None) -> str:
+    def command_play(self, item_name: str | None = None) -> str:
         """Handle the /play command."""
         from .items import ItemManager
 
@@ -339,7 +342,7 @@ class GameEngine:
             f"Affection: {stats.affection:.0f}/100",
             f"Health: {stats.health:.0f}/100",
             f"Sleeping: {'Yes' if stats.sleeping else 'No'}",
-            f"Play time: {self.state.total_play_time_s / 3600:.1f} hours"
+            f"Play time: {self.state.total_play_time_s / 3600:.1f} hours",
         ]
         return "\n".join(status_lines)
 
@@ -347,7 +350,7 @@ class GameEngine:
         """Save the current game state."""
         return self.state_manager.save_state(self.state)
 
-    def get_current_stats(self) -> Dict[str, Any]:
+    def get_current_stats(self) -> dict[str, Any]:
         """Get current stats for LLM context."""
         return self.state.stats.to_dict()
 

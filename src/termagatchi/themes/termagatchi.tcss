@@ -10,11 +10,21 @@ App {
     background: #16213e;
     border: solid #0f3460;
     color: #eee;
+    height: 6;
+}
+
+.status-bars {
+    height: 4;
+    grid-size: 3 2;
+    grid-columns: 1fr 1fr 1fr;
+    grid-rows: 1fr 1fr;
 }
 
 .status-bar {
     background: #16213e;
     color: #eee;
+    width: 1fr;
+    min-width: 12;
 }
 
 .hunger-bar {
@@ -26,7 +36,19 @@ App {
 }
 
 .energy-bar {
-    color: #ff8c42;
+    color: #ffeb3b;
+}
+
+.hygiene-bar {
+    color: #2196f3;
+}
+
+.affection-bar {
+    color: #e91e63;
+}
+
+.health-bar {
+    color: #4caf50;
 }
 
 /* Main sprite area */

@@ -1,7 +1,8 @@
 """Deterministic fallback system for when LLM is unavailable."""
 
 import random
-from typing import Dict, Any
+from typing import Any
+
 from .schema import PetAction, PetReply
 
 
@@ -125,7 +126,9 @@ class FallbackSystem:
     }
 
     @classmethod
-    def get_response(cls, stats: Dict[str, Any], last_input: str = "", time_of_day: str = "day") -> PetReply:
+    def get_response(
+        cls, stats: dict[str, Any], last_input: str = "", time_of_day: str = "day"
+    ) -> PetReply:
         """Get a deterministic response based on pet state."""
         # Extract stats with defaults
         hunger = stats.get("hunger", 50)
@@ -137,11 +140,13 @@ class FallbackSystem:
 
         # If sleeping, always return sleep response
         if sleeping:
-            say, action = random.choice([
-                ("zzz...", PetAction.SLEEPING),
-                ("sleeping...", PetAction.SLEEPING),
-                ("dreams...", PetAction.NAP),
-            ])
+            say, action = random.choice(
+                [
+                    ("zzz...", PetAction.SLEEPING),
+                    ("sleeping...", PetAction.SLEEPING),
+                    ("dreams...", PetAction.NAP),
+                ]
+            )
             return PetReply(say=say, action=action)
 
         # Check for critical states first

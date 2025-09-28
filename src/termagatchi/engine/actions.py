@@ -1,6 +1,5 @@
 """Pet actions and animation definitions."""
 
-from typing import Dict, List
 from ..ai.schema import PetAction
 
 
@@ -15,7 +14,7 @@ class AnimationFrame:
 class ActionAnimation:
     """Complete animation sequence for a pet action."""
 
-    def __init__(self, frames: List[str], fps: int = 8):
+    def __init__(self, frames: list[str], fps: int = 8):
         self.frames = [AnimationFrame(frame, int(1000 / fps)) for frame in frames]
         self.fps = fps
         self.total_duration_ms = len(frames) * int(1000 / fps)
@@ -23,275 +22,341 @@ class ActionAnimation:
 
 # ASCII art frames for each action
 # TODO: Fix escape sequence warnings by using raw strings (r"...") for all ASCII art
-ACTION_ANIMATIONS: Dict[PetAction, ActionAnimation] = {
-    PetAction.SMILE: ActionAnimation([
-        """
-    - | ○ ○ | -
-    - | \_/ | -
+ACTION_ANIMATIONS: dict[PetAction, ActionAnimation] = {
+    PetAction.SMILE: ActionAnimation(
+        [
+            r"""
+      ╭─────────╮
+     ╱           ╲
+    ╱   ◉     ◉   ╲
+   ╱               ╲
+  ╱     \_____/     ╲
+ ╱                   ╲
+╱_____________________╲
         """.strip(),
-        """
-    - | ◉ ◉ | -
-    - | \_/ | -
+            r"""
+      ╭─────────╮
+     ╱           ╲
+    ╱   ◉     ◉   ╲
+   ╱               ╲
+  ╱     \^___^/     ╲
+ ╱                   ╲
+╱_____________________╲
         """.strip(),
-    ], fps=4),
-
-    PetAction.LAUGH: ActionAnimation([
-        """
-    - | ○ ○ | -
-    - | \_/ | -
+        ],
+        fps=4,
+    ),
+    PetAction.LAUGH: ActionAnimation(
+        [
+            r"""
+      ╭─────────╮
+     ╱           ╲
+    ╱   ◉     ◉   ╲
+   ╱               ╲
+  ╱     \_____/     ╲
+ ╱                   ╲
+╱_____________________╲
         """.strip(),
-        """
-    - | ◉ ◉ | -
-    - | \^/ | -
+            r"""
+      ╭─────────╮
+     ╱           ╲
+    ╱   ◉     ◉   ╲
+   ╱               ╲
+  ╱     \^^^^^/     ╲
+ ╱                   ╲
+╱_____________________╲
         """.strip(),
-        """
-    - | ◉ ◉ | -
-    - | \_/ | -
+            r"""
+      ╭─────────╮
+     ╱           ╲
+    ╱   ◉     ◉   ╲
+   ╱               ╲
+  ╱     \^___^/     ╲
+ ╱                   ╲
+╱_____________________╲
         """.strip(),
-    ], fps=8),
-
-    PetAction.BLUSH: ActionAnimation([
-        """
+        ],
+        fps=8,
+    ),
+    PetAction.BLUSH: ActionAnimation(
+        [
+            r"""
     - | ○ ○ | -
     ~ | \_/ | ~
         """.strip(),
-        """
+            r"""
     ~ | ◉ ◉ | ~
     ~ | \_/ | ~
         """.strip(),
-    ], fps=4),
-
-    PetAction.HEART: ActionAnimation([
-        """
+        ],
+        fps=4,
+    ),
+    PetAction.HEART: ActionAnimation(
+        [
+            r"""
     ♡ | ○ ○ | ♡
     - | \_/ | -
         """.strip(),
-        """
+            r"""
     ♥ | ◉ ◉ | ♥
     - | \_/ | -
         """.strip(),
-    ], fps=6),
-
-    PetAction.WAVE: ActionAnimation([
-        """
+        ],
+        fps=6,
+    ),
+    PetAction.WAVE: ActionAnimation(
+        [
+            r"""
   ╭─| ○ ○ |─╮
     | \_/ |
         """.strip(),
-        """
+            r"""
     | ○ ○ |─╮
     | \_/ |
         """.strip(),
-        """
+            r"""
   ╭─| ○ ○ |
     | \_/ |
         """.strip(),
-    ], fps=6),
-
-    PetAction.WIGGLE: ActionAnimation([
-        """
+        ],
+        fps=6,
+    ),
+    PetAction.WIGGLE: ActionAnimation(
+        [
+            r"""
   ╱ | ○ ○ | ╲
     | \_/ |
         """.strip(),
-        """
+            r"""
   ╲ | ○ ○ | ╱
     | \_/ |
         """.strip(),
-        """
+            r"""
     | ○ ○ |
     | \_/ |
         """.strip(),
-    ], fps=10),
-
-    PetAction.JUMP: ActionAnimation([
-        """
+        ],
+        fps=10,
+    ),
+    PetAction.JUMP: ActionAnimation(
+        [
+            r"""
     | ○ ○ |
     | \_/ |
    ╱       ╲
         """.strip(),
-        """
+            r"""
    ╭| ○ ○ |╮
    ╰| \_/ |╯
         """.strip(),
-        """
+            r"""
     | ○ ○ |
     | \_/ |
    ╱       ╲
         """.strip(),
-    ], fps=8),
-
-    PetAction.EAT: ActionAnimation([
-        """
+        ],
+        fps=8,
+    ),
+    PetAction.EAT: ActionAnimation(
+        [
+            r"""
     | ○ ○ |
     | \_/ | ●
         """.strip(),
-        """
+            r"""
     | ○ ○ |
     | \o/ |
         """.strip(),
-        """
+            r"""
     | ○ ○ |
     | \_/ |
         """.strip(),
-    ], fps=6),
-
-    PetAction.CLEAN: ActionAnimation([
-        """
+        ],
+        fps=6,
+    ),
+    PetAction.CLEAN: ActionAnimation(
+        [
+            r"""
   ～| ○ ○ |～
     | \_/ |
         """.strip(),
-        """
+            r"""
   ◦◦| ○ ○ |◦◦
     | \_/ |
         """.strip(),
-        """
+            r"""
     | ◉ ◉ |
     | \_/ |
         """.strip(),
-    ], fps=6),
-
-    PetAction.PLAY: ActionAnimation([
-        """
+        ],
+        fps=6,
+    ),
+    PetAction.PLAY: ActionAnimation(
+        [
+            r"""
     | ○ ○ |
     | \_/ | ★
         """.strip(),
-        """
+            r"""
   ★ | ◉ ◉ |
     | \^/ |
         """.strip(),
-        """
+            r"""
     | ○ ○ | ★
     | \_/ |
         """.strip(),
-    ], fps=8),
-
-    PetAction.NAP: ActionAnimation([
-        """
+        ],
+        fps=8,
+    ),
+    PetAction.NAP: ActionAnimation(
+        [
+            r"""
     | - - |
     | \_/ |
         """.strip(),
-        """
+            r"""
     | ‾ ‾ |
     | \_/ |
         """.strip(),
-    ], fps=2),
-
-    PetAction.SLEEPING: ActionAnimation([
-        """
+        ],
+        fps=2,
+    ),
+    PetAction.SLEEPING: ActionAnimation(
+        [
+            r"""
     | - - |  Z
     | \_/ | z
         """.strip(),
-        """
+            r"""
     | ‾ ‾ | z
     | \_/ |  Z
         """.strip(),
-    ], fps=2),
-
-    PetAction.SAD: ActionAnimation([
-        """
+        ],
+        fps=2,
+    ),
+    PetAction.SAD: ActionAnimation(
+        [
+            r"""
     | ○ ○ |
     | /‾\ |
         """.strip(),
-        """
+            r"""
     | ◦ ◦ |
     | /‾\ |
         """.strip(),
-    ], fps=3),
-
-    PetAction.CRY: ActionAnimation([
-        """
+        ],
+        fps=3,
+    ),
+    PetAction.CRY: ActionAnimation(
+        [
+            r"""
   ╷ | ○ ○ | ╷
     | /‾\ |
         """.strip(),
-        """
+            r"""
   ┆ | ◦ ◦ | ┆
     | /‾\ |
         """.strip(),
-    ], fps=4),
-
-    PetAction.SICK: ActionAnimation([
-        """
+        ],
+        fps=4,
+    ),
+    PetAction.SICK: ActionAnimation(
+        [
+            r"""
     | × × |
     | /‾\ |
         """.strip(),
-        """
+            r"""
     | ◦ ◦ |
     | /○\ |
         """.strip(),
-    ], fps=3),
-
-    PetAction.HEAL: ActionAnimation([
-        """
+        ],
+        fps=3,
+    ),
+    PetAction.HEAL: ActionAnimation(
+        [
+            r"""
   ╋ | ○ ○ | ╋
     | \_/ |
         """.strip(),
-        """
+            r"""
   ✚ | ◉ ◉ | ✚
     | \_/ |
         """.strip(),
-        """
+            r"""
     | ○ ○ |
     | \_/ |
         """.strip(),
-    ], fps=6),
-
-    PetAction.CONFUSED: ActionAnimation([
-        """
+        ],
+        fps=6,
+    ),
+    PetAction.CONFUSED: ActionAnimation(
+        [
+            r"""
   ? | ○ ○ | ?
     | \_? |
         """.strip(),
-        """
+            r"""
   ? | ◦ ◦ | ?
     | \_? |
         """.strip(),
-    ], fps=4),
-
-    PetAction.THINK: ActionAnimation([
-        """
+        ],
+        fps=4,
+    ),
+    PetAction.THINK: ActionAnimation(
+        [
+            r"""
   . | ○ ○ |
   ° | \_/ |
         """.strip(),
-        """
+            r"""
   ° | ○ ○ |
   ○ | \_/ |
         """.strip(),
-        """
+            r"""
   ○ | ○ ○ |
     | \_/ |
         """.strip(),
-    ], fps=4),
-
-    PetAction.SURPRISED: ActionAnimation([
-        """
+        ],
+        fps=4,
+    ),
+    PetAction.SURPRISED: ActionAnimation(
+        [
+            r"""
     | ○ ○ |
     | \_○ |
         """.strip(),
-        """
+            r"""
     | ◉ ◉ |
     | \_O |
         """.strip(),
-        """
+            r"""
     | ○ ○ |
     | \_/ |
         """.strip(),
-    ], fps=8),
-
-    PetAction.THANKS: ActionAnimation([
-        """
+        ],
+        fps=8,
+    ),
+    PetAction.THANKS: ActionAnimation(
+        [
+            r"""
     | ○ ○ |
     | \_/ |
   ╰───────╯
         """.strip(),
-        """
+            r"""
     | ◉ ◉ |
     | \_/ |
   ╰ thank ╯
    you!
         """.strip(),
-        """
+            r"""
     | ○ ○ |
     | \_/ |
         """.strip(),
-    ], fps=6),
+        ],
+        fps=6,
+    ),
 }
 
 

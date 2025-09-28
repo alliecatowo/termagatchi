@@ -1,9 +1,9 @@
 """Input widget for user commands and messages."""
 
-from textual.widgets import Input, Static
-from textual.containers import Horizontal
 from textual.app import ComposeResult
+from textual.containers import Horizontal
 from textual.message import Message
+from textual.widgets import Input, Static
 
 
 class CommandInput(Static):
@@ -77,7 +77,7 @@ class CommandsPanel(Static):
             "/pet",
             "/status",
             "/save",
-            "/quit"
+            "/quit",
         ]
 
     def compose(self) -> ComposeResult:

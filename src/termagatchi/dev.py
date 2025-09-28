@@ -2,7 +2,6 @@
 
 import subprocess
 import sys
-from pathlib import Path
 
 
 def run_command(cmd: list[str], description: str) -> bool:
@@ -58,6 +57,7 @@ def check() -> None:
 if __name__ == "__main__":
     # Allow running as a module
     import sys
+
     if len(sys.argv) > 1:
         cmd = sys.argv[1]
         if cmd == "lint":

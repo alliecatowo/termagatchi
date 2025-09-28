@@ -1,8 +1,8 @@
 """Status bars widget for displaying pet stats."""
 
-from textual.widgets import Static, ProgressBar
-from textual.containers import Horizontal
 from textual.app import ComposeResult
+from textual.containers import Horizontal, Vertical, Grid
+from textual.widgets import ProgressBar, Static
 
 from ..engine.models import PetStats
 
@@ -27,13 +27,9 @@ class StatusBar(Static):
         self.value = max(0.0, min(100.0, value))
         self.progress_bar.progress = self.value
 
-        # Update styling based on value
-        if self.value < 20:
-            self.progress_bar.styles.bar_color = "red"
-        elif self.value < 40:
-            self.progress_bar.styles.bar_color = "yellow"
-        else:
-            self.progress_bar.styles.bar_color = self.color
+        # TODO: Update styling based on value when we fix CSS approach
+        # Currently Textual ProgressBar doesn't support dynamic bar_color
+        # Will need to use CSS classes for different value ranges
 
 
 class StatusPanel(Static):
@@ -41,22 +37,31 @@ class StatusPanel(Static):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.hunger_bar = StatusBar("Hunger", color="orange")
-        self.happiness_bar = StatusBar("Happiness", color="green")
-        self.energy_bar = StatusBar("Energy", color="orange")
+        self.hunger_bar = StatusBar("Hunger", color="#ff8c42")
+        self.happiness_bar = StatusBar("Happiness", color="#4caf50")
+        self.energy_bar = StatusBar("Energy", color="#ffeb3b")
+        self.hygiene_bar = StatusBar("Hygiene", color="#2196f3")
+        self.affection_bar = StatusBar("Affection", color="#e91e63")
+        self.health_bar = StatusBar("Health", color="#4caf50")
 
     def compose(self) -> ComposeResult:
         """Compose the status panel layout."""
-        with Horizontal(classes="status-bars"):
+        with Grid(classes="status-bars"):
             yield self.hunger_bar
             yield self.happiness_bar
             yield self.energy_bar
+            yield self.hygiene_bar
+            yield self.affection_bar
+            yield self.health_bar
 
     def update_stats(self, stats: PetStats) -> None:
         """Update all status bars with current stats."""
         self.hunger_bar.update_value(stats.hunger)
         self.happiness_bar.update_value(stats.happiness)
         self.energy_bar.update_value(stats.energy)
+        self.hygiene_bar.update_value(stats.hygiene)
+        self.affection_bar.update_value(stats.affection)
+        self.health_bar.update_value(stats.health)
 
         # Update the display
         self.refresh()
@@ -68,3 +73,6 @@ class StatusPanel(Static):
         self.hunger_bar.add_class("hunger-bar")
         self.happiness_bar.add_class("happiness-bar")
         self.energy_bar.add_class("energy-bar")
+        self.hygiene_bar.add_class("hygiene-bar")
+        self.affection_bar.add_class("affection-bar")
+        self.health_bar.add_class("health-bar")

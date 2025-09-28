@@ -1,13 +1,13 @@
 """Notifications panel widget for displaying status messages."""
 
-from datetime import datetime
-from textual.widgets import Static
-from textual.containers import Vertical
-from textual.app import ComposeResult
-from textual import work
-from rich.text import Text
-from typing import List
 import asyncio
+from datetime import datetime
+
+from rich.text import Text
+from textual import work
+from textual.app import ComposeResult
+from textual.containers import Vertical
+from textual.widgets import Static
 
 
 class NotificationItem(Static):
@@ -51,7 +51,7 @@ class NotificationsPanel(Static):
     def __init__(self, max_notifications: int = 5, **kwargs):
         super().__init__(**kwargs)
         self.max_notifications = max_notifications
-        self.notifications: List[NotificationItem] = []
+        self.notifications: list[NotificationItem] = []
 
     def compose(self) -> ComposeResult:
         """Compose the notifications panel."""
@@ -101,11 +101,11 @@ class NotificationsPanel(Static):
         """Get the current number of notifications."""
         return len(self.notifications)
 
-    def update_notifications(self, messages: List[str]) -> None:
+    def update_notifications(self, messages: list[str]) -> None:
         """Update notifications with a new list of messages."""
         # Clear existing notifications
         self.clear_all()
 
         # Add new notifications
-        for message in messages[-self.max_notifications:]:
+        for message in messages[-self.max_notifications :]:
             self.add_notification(message, auto_fade=False)

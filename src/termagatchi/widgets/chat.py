@@ -1,10 +1,11 @@
 """Chat log widget for displaying conversation history."""
 
-from textual.widgets import Static, RichLog
-from textual.app import ComposeResult
-from rich.text import Text
-from typing import List, Dict, Any
 from datetime import datetime
+from typing import Any
+
+from rich.text import Text
+from textual.app import ComposeResult
+from textual.widgets import RichLog, Static
 
 
 class ChatLog(Static):
@@ -80,7 +81,7 @@ class ChatLog(Static):
         self._log.write(error_text)
         self._scroll_to_bottom()
 
-    def load_chat_history(self, history: List[Dict[str, Any]]) -> None:
+    def load_chat_history(self, history: list[dict[str, Any]]) -> None:
         """Load chat history from saved data."""
         self._log.clear()
 
@@ -134,4 +135,5 @@ class ChatLog(Static):
 
     def get_visible_line_count(self) -> int:
         """Get the number of visible lines in the chat log."""
+        # TODO: Fix accessing private _content attribute - use proper API
         return len(self._log._content)

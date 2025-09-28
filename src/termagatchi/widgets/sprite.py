@@ -1,11 +1,12 @@
 """Sprite widget for displaying the animated pet."""
 
 import asyncio
-from textual.widgets import Static
-from textual.app import ComposeResult
-from textual import work
-from rich.text import Text
+
 from rich.align import Align
+from rich.text import Text
+from textual import work
+from textual.app import ComposeResult
+from textual.widgets import Static
 
 from ..ai.schema import PetAction
 from ..engine.actions import get_action_animation, get_idle_frame

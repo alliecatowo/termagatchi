@@ -1,11 +1,13 @@
 """Pydantic models for structured LLM outputs and AI integration."""
 
-from pydantic import BaseModel, Field, field_validator
 from enum import Enum
+
+from pydantic import BaseModel, Field, field_validator
 
 
 class PetAction(str, Enum):
     """Actions that the pet can perform, each mapped to an animation."""
+
     SMILE = "SMILE"
     LAUGH = "LAUGH"
     BLUSH = "BLUSH"
@@ -35,11 +37,10 @@ class PetReply(BaseModel):
         ...,
         description="Short, cute pet-like sentence (≤12 words). Should be playful and endearing.",
         min_length=1,
-        max_length=100
+        max_length=100,
     )
     action: PetAction = Field(
-        ...,
-        description="The action/animation the pet should perform in response."
+        ..., description="The action/animation the pet should perform in response."
     )
 
     @field_validator("say")
@@ -70,25 +71,16 @@ class GameContext(BaseModel):
     """Context information passed to the LLM for generating responses."""
 
     stats: dict[str, float] = Field(
-        ...,
-        description="Current pet stats (hunger, happiness, energy, etc.)"
+        ..., description="Current pet stats (hunger, happiness, energy, etc.)"
     )
     recent_events: list[str] = Field(
-        default_factory=list,
-        description="Recent game events and user actions"
+        default_factory=list, description="Recent game events and user actions"
     )
-    last_user_input: str = Field(
-        default="",
-        description="The user's last input or command"
-    )
+    last_user_input: str = Field(default="", description="The user's last input or command")
     time_of_day: str = Field(
-        default="day",
-        description="Current time context (morning, day, evening, night)"
+        default="day", description="Current time context (morning, day, evening, night)"
     )
-    pet_name: str = Field(
-        default="Termagatchi",
-        description="The pet's name"
-    )
+    pet_name: str = Field(default="Termagatchi", description="The pet's name")
 
 
 class LLMConfig(BaseModel):
@@ -96,25 +88,10 @@ class LLMConfig(BaseModel):
 
     provider: str = Field(
         default="deterministic",
-        description="LLM provider (openai, anthropic, google, ollama, etc.)"
+        description="LLM provider (openai, anthropic, google, ollama, etc.)",
     )
-    model: str = Field(
-        default="gpt-4o-mini",
-        description="Model name for the selected provider"
-    )
-    timeout_s: int = Field(
-        default=4,
-        description="Request timeout in seconds"
-    )
-    max_retries: int = Field(
-        default=2,
-        description="Maximum number of retry attempts"
-    )
-    temperature: float = Field(
-        default=0.7,
-        description="LLM temperature for response creativity"
-    )
-    max_tokens: int = Field(
-        default=64,
-        description="Maximum tokens in LLM response"
-    )
+    model: str = Field(default="gpt-4o-mini", description="Model name for the selected provider")
+    timeout_s: int = Field(default=4, description="Request timeout in seconds")
+    max_retries: int = Field(default=2, description="Maximum number of retry attempts")
+    temperature: float = Field(default=0.7, description="LLM temperature for response creativity")
+    max_tokens: int = Field(default=64, description="Maximum tokens in LLM response")

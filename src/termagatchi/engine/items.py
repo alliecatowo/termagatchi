@@ -1,7 +1,7 @@
 """Item system for loading and managing items from YAML."""
 
 from pathlib import Path
-from typing import Dict, Optional
+
 from ruamel.yaml import YAML
 
 from .models import ItemDefinition
@@ -10,26 +10,26 @@ from .models import ItemDefinition
 class ItemManager:
     """Manages items loaded from YAML configuration."""
 
-    def __init__(self, items_file: Optional[Path] = None):
+    def __init__(self, items_file: Path | None = None):
         if items_file is None:
             # Default to the data/items.yaml in the package
             items_file = Path(__file__).parent.parent / "data" / "items.yaml"
 
         self.items_file = Path(items_file)
-        self.items: Dict[str, Dict[str, ItemDefinition]] = {}
+        self.items: dict[str, dict[str, ItemDefinition]] = {}
         self._load_items()
 
     def _load_items(self) -> None:
         """Load items from YAML file."""
         try:
-            yaml = YAML(typ='safe')
+            yaml = YAML(typ="safe")
 
             if not self.items_file.exists():
                 print(f"Warning: Items file not found at {self.items_file}")
                 self._create_default_items()
                 return
 
-            with open(self.items_file, 'r', encoding='utf-8') as f:
+            with open(self.items_file, encoding="utf-8") as f:
                 data = yaml.load(f)
 
             if not data:
@@ -46,7 +46,9 @@ class ItemManager:
                     except Exception as e:
                         print(f"Error loading item {category}.{item_id}: {e}")
 
-            print(f"Loaded {sum(len(cat) for cat in self.items.values())} items from {self.items_file}")
+            print(
+                f"Loaded {sum(len(cat) for cat in self.items.values())} items from {self.items_file}"
+            )
 
         except Exception as e:
             print(f"Error loading items file: {e}")
@@ -60,54 +62,54 @@ class ItemManager:
                     name="Kibble",
                     description="Basic pet food",
                     effects={"hunger": 15, "affection": 2},
-                    cooldown_s=300
+                    cooldown_s=300,
                 ),
                 "premium_food": ItemDefinition(
                     name="Premium Food",
                     description="High quality pet food",
                     effects={"hunger": 25, "happiness": 5, "affection": 5},
-                    cooldown_s=600
-                )
+                    cooldown_s=600,
+                ),
             },
             "cleaning": {
                 "soap": ItemDefinition(
                     name="Soap",
                     description="Basic cleaning soap",
                     effects={"hygiene": 20, "affection": 1},
-                    cooldown_s=600
+                    cooldown_s=600,
                 ),
                 "shampoo": ItemDefinition(
                     name="Shampoo",
                     description="Premium pet shampoo",
                     effects={"hygiene": 35, "happiness": 3, "affection": 3},
-                    cooldown_s=900
-                )
+                    cooldown_s=900,
+                ),
             },
             "toys": {
                 "ball": ItemDefinition(
                     name="Ball",
                     description="A simple bouncy ball",
                     effects={"happiness": 15, "energy": -5, "affection": 3},
-                    cooldown_s=300
+                    cooldown_s=300,
                 ),
                 "puzzle": ItemDefinition(
                     name="Puzzle Toy",
                     description="Mental stimulation toy",
                     effects={"happiness": 20, "mood": 10, "energy": -3, "affection": 5},
-                    cooldown_s=900
-                )
-            }
+                    cooldown_s=900,
+                ),
+            },
         }
 
-    def get_item(self, category: str, item_id: str) -> Optional[ItemDefinition]:
+    def get_item(self, category: str, item_id: str) -> ItemDefinition | None:
         """Get a specific item by category and ID."""
         return self.items.get(category, {}).get(item_id)
 
-    def get_category_items(self, category: str) -> Dict[str, ItemDefinition]:
+    def get_category_items(self, category: str) -> dict[str, ItemDefinition]:
         """Get all items in a category."""
         return self.items.get(category, {})
 
-    def get_all_items(self) -> Dict[str, Dict[str, ItemDefinition]]:
+    def get_all_items(self) -> dict[str, dict[str, ItemDefinition]]:
         """Get all items organized by category."""
         return self.items
 
@@ -115,7 +117,7 @@ class ItemManager:
         """Get a list of item names in a category."""
         return list(self.items.get(category, {}).keys())
 
-    def search_items(self, search_term: str) -> Dict[str, Dict[str, ItemDefinition]]:
+    def search_items(self, search_term: str) -> dict[str, dict[str, ItemDefinition]]:
         """Search for items by name or description."""
         results = {}
         search_lower = search_term.lower()
@@ -123,9 +125,11 @@ class ItemManager:
         for category, items in self.items.items():
             category_results = {}
             for item_id, item in items.items():
-                if (search_lower in item.name.lower() or
-                    search_lower in item.description.lower() or
-                    search_lower in item_id.lower()):
+                if (
+                    search_lower in item.name.lower()
+                    or search_lower in item.description.lower()
+                    or search_lower in item_id.lower()
+                ):
                     category_results[item_id] = item
 
             if category_results:
@@ -133,7 +137,7 @@ class ItemManager:
 
         return results
 
-    def get_item_info(self, category: str, item_id: str) -> Optional[str]:
+    def get_item_info(self, category: str, item_id: str) -> str | None:
         """Get formatted information about an item."""
         item = self.get_item(category, item_id)
         if not item:
@@ -142,7 +146,7 @@ class ItemManager:
         info_lines = [
             f"**{item.name}**",
             f"Description: {item.description}",
-            f"Cooldown: {item.cooldown_s}s"
+            f"Cooldown: {item.cooldown_s}s",
         ]
 
         if item.effects:
@@ -190,7 +194,7 @@ class ItemManager:
             print(f"Failed to reload items: {e}")
             return False
 
-    def save_items_to_file(self, file_path: Optional[Path] = None) -> bool:
+    def save_items_to_file(self, file_path: Path | None = None) -> bool:
         """Save current items to a YAML file."""
         if file_path is None:
             file_path = self.items_file
@@ -209,7 +213,7 @@ class ItemManager:
             # Ensure parent directory exists
             file_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 yaml.dump(data, f)
 
             print(f"Items saved to {file_path}")

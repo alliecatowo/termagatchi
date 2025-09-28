@@ -3,12 +3,12 @@
 import os
 import sys
 from pathlib import Path
-from typing import Optional, Annotated
+from typing import Annotated
 
 import typer
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
+from rich.table import Table
 from rich.text import Text
 
 from .app import run_app
@@ -20,7 +20,7 @@ app = typer.Typer(
     help="🐾 Termagatchi - Your AI-powered terminal pet",
     epilog="For more information, visit: https://github.com/your-username/termagatchi",
     no_args_is_help=True,
-    rich_markup_mode="rich"
+    rich_markup_mode="rich",
 )
 
 console = Console()
@@ -29,13 +29,9 @@ console = Console()
 @app.command()
 def run(
     save_dir: Annotated[
-        Optional[Path],
-        typer.Option("--save-dir", "-s", help="Directory for save files")
+        Path | None, typer.Option("--save-dir", "-s", help="Directory for save files")
     ] = None,
-    debug: Annotated[
-        bool,
-        typer.Option("--debug", help="Enable debug mode")
-    ] = False,
+    debug: Annotated[bool, typer.Option("--debug", help="Enable debug mode")] = False,
 ) -> None:
     """🎮 Run the Termagatchi application."""
 
@@ -47,7 +43,7 @@ def run(
         welcome_panel = Panel(
             Text("Welcome to Termagatchi!\n🐾 Your AI-powered terminal pet", justify="center"),
             title="< Termagatchi",
-            border_style="cyan"
+            border_style="cyan",
         )
         console.print(welcome_panel)
 
@@ -70,22 +66,15 @@ def run(
 
 @app.command()
 def config(
-    edit: Annotated[
-        bool,
-        typer.Option("--edit", "-e", help="Open config file in editor")
-    ] = False,
-    show: Annotated[
-        bool,
-        typer.Option("--show", "-s", help="Show current configuration")
-    ] = False,
+    edit: Annotated[bool, typer.Option("--edit", "-e", help="Open config file in editor")] = False,
+    show: Annotated[bool, typer.Option("--show", "-s", help="Show current configuration")] = False,
     provider: Annotated[
-        Optional[str],
-        typer.Option("--provider", "-p", help="Set AI provider (openai, anthropic, google, ollama)")
+        str | None,
+        typer.Option(
+            "--provider", "-p", help="Set AI provider (openai, anthropic, google, ollama)"
+        ),
     ] = None,
-    model: Annotated[
-        Optional[str],
-        typer.Option("--model", "-m", help="Set AI model name")
-    ] = None,
+    model: Annotated[str | None, typer.Option("--model", "-m", help="Set AI model name")] = None,
 ) -> None:
     """� Manage Termagatchi configuration."""
 
@@ -106,8 +95,7 @@ def config(
 @app.command()
 def status(
     save_dir: Annotated[
-        Optional[Path],
-        typer.Option("--save-dir", "-s", help="Directory for save files")
+        Path | None, typer.Option("--save-dir", "-s", help="Directory for save files")
     ] = None,
 ) -> None:
     """=� Show pet status and game information."""
@@ -117,7 +105,9 @@ def status(
         game_state = state_manager.load_state()
 
         if not game_state:
-            console.print("L [red]No save file found. Start a new game with 'termagatchi run'[/red]")
+            console.print(
+                "L [red]No save file found. Start a new game with 'termagatchi run'[/red]"
+            )
             return
 
         # Create status table
@@ -146,7 +136,9 @@ def status(
         table.add_row("Energy", f"{stats.energy:.0f}/100", get_status_emoji(stats.energy))
         table.add_row("Affection", f"{stats.affection:.0f}/100", get_status_emoji(stats.affection))
         table.add_row("Health", f"{stats.health:.0f}/100", get_status_emoji(stats.health))
-        table.add_row("Sleeping", "Yes" if stats.sleeping else "No", "=4" if stats.sleeping else "=A")
+        table.add_row(
+            "Sleeping", "Yes" if stats.sleeping else "No", "=4" if stats.sleeping else "=A"
+        )
 
         console.print(table)
 
@@ -163,18 +155,18 @@ def status(
 @app.command()
 def reset(
     save_dir: Annotated[
-        Optional[Path],
-        typer.Option("--save-dir", "-s", help="Directory for save files")
+        Path | None, typer.Option("--save-dir", "-s", help="Directory for save files")
     ] = None,
     force: Annotated[
-        bool,
-        typer.Option("--force", "-f", help="Force reset without confirmation")
+        bool, typer.Option("--force", "-f", help="Force reset without confirmation")
     ] = False,
 ) -> None:
     """= Reset game state (start over)."""
 
     if not force:
-        confirm = typer.confirm("�  This will delete your current pet and start over. Are you sure?")
+        confirm = typer.confirm(
+            "�  This will delete your current pet and start over. Are you sure?"
+        )
         if not confirm:
             console.print("L [yellow]Reset cancelled[/yellow]")
             return
@@ -191,7 +183,9 @@ def reset(
             state_manager.backup_file.unlink()
             console.print("=� [green]Backup save file deleted[/green]")
 
-        console.print(" [green]Game reset successfully! Start a new game with 'termagatchi run'[/green]")
+        console.print(
+            " [green]Game reset successfully! Start a new game with 'termagatchi run'[/green]"
+        )
 
     except Exception as e:
         console.print(f"❌ [red]Error resetting game: {e}[/red]")
@@ -201,18 +195,20 @@ def reset(
 def demo() -> None:
     """🎬 Run a demonstration of Termagatchi features."""
 
-    console.print(Panel(
-        "🎬 [cyan]Termagatchi Demo[/cyan]\n\n"
-        "This would show a scripted demo of the game features:\n"
-        "• AI-powered pet interactions\n"
-        "• Stat management and care commands\n"
-        "• Multiple LLM provider support\n"
-        "• Real-time animations and responses\n\n"
-        "💡 [yellow]Demo mode not yet implemented[/yellow]\n"
-        "Use 'termagatchi run' to start the real game!",
-        title="Demo Mode",
-        border_style="yellow"
-    ))
+    console.print(
+        Panel(
+            "🎬 [cyan]Termagatchi Demo[/cyan]\n\n"
+            "This would show a scripted demo of the game features:\n"
+            "• AI-powered pet interactions\n"
+            "• Stat management and care commands\n"
+            "• Multiple LLM provider support\n"
+            "• Real-time animations and responses\n\n"
+            "💡 [yellow]Demo mode not yet implemented[/yellow]\n"
+            "Use 'termagatchi run' to start the real game!",
+            title="Demo Mode",
+            border_style="yellow",
+        )
+    )
 
 
 def check_ai_config() -> None:
@@ -223,7 +219,8 @@ def check_ai_config() -> None:
         "OpenAI": os.getenv("OPENAI_API_KEY"),
         "Anthropic": os.getenv("ANTHROPIC_API_KEY"),
         "Google": os.getenv("GOOGLE_API_KEY"),
-        "Ollama": os.getenv("OPENAI_API_BASE") and "ollama" in os.getenv("OPENAI_API_BASE", "").lower(),
+        "Ollama": os.getenv("OPENAI_API_BASE")
+        and "ollama" in os.getenv("OPENAI_API_BASE", "").lower(),
     }
 
     configured_providers = [name for name, key in ai_keys.items() if key]
@@ -232,7 +229,9 @@ def check_ai_config() -> None:
         console.print(f"> [green]AI providers available:[/green] {', '.join(configured_providers)}")
     else:
         console.print("� [yellow]No AI providers configured. Running in offline mode.[/yellow]")
-        console.print("=� [dim]Set API keys as environment variables or use 'termagatchi config' to set up AI.[/dim]")
+        console.print(
+            "=� [dim]Set API keys as environment variables or use 'termagatchi config' to set up AI.[/dim]"
+        )
 
 
 def show_current_config() -> None:
@@ -279,7 +278,7 @@ def edit_config_file(config_file: Path) -> None:
     if not config_file.exists():
         # Create basic config file
         config_file.parent.mkdir(exist_ok=True)
-        with open(config_file, 'w') as f:
+        with open(config_file, "w") as f:
             f.write("""# Termagatchi Configuration
 
 [lm]
@@ -303,7 +302,7 @@ mode = "auto"
     os.system(f"{editor} {config_file}")
 
 
-def update_config(config_file: Path, provider: Optional[str], model: Optional[str]) -> None:
+def update_config(config_file: Path, provider: str | None, model: str | None) -> None:
     """Update configuration with new values."""
 
     console.print("� [yellow]Configuration update not yet implemented[/yellow]")
@@ -313,18 +312,20 @@ def update_config(config_file: Path, provider: Optional[str], model: Optional[st
 def interactive_config(config_file: Path) -> None:
     """Interactive configuration setup."""
 
-    console.print(Panel(
-        "🔧 [cyan]Interactive Configuration Setup[/cyan]\n\n"
-        "This would guide you through setting up:\n"
-        "• AI provider selection\n"
-        "• API key configuration\n"
-        "• Model preferences\n"
-        "• Theme settings\n\n"
-        "💡 [yellow]Interactive config not yet implemented[/yellow]\n"
-        "Use 'termagatchi config --edit' for manual configuration.",
-        title="Configuration Setup",
-        border_style="yellow"
-    ))
+    console.print(
+        Panel(
+            "🔧 [cyan]Interactive Configuration Setup[/cyan]\n\n"
+            "This would guide you through setting up:\n"
+            "• AI provider selection\n"
+            "• API key configuration\n"
+            "• Model preferences\n"
+            "• Theme settings\n\n"
+            "💡 [yellow]Interactive config not yet implemented[/yellow]\n"
+            "Use 'termagatchi config --edit' for manual configuration.",
+            title="Configuration Setup",
+            border_style="yellow",
+        )
+    )
 
 
 if __name__ == "__main__":

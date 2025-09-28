@@ -1,23 +1,38 @@
 """Main Textual application for Termagatchi."""
 
+import os
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
-from textual.app import App, ComposeResult
-from textual.containers import Horizontal, Vertical, Container
-from textual.widgets import Header, Footer
-from textual.timer import Timer
 from textual import work
+from textual.app import App, ComposeResult
+from textual.containers import Container, Horizontal, Vertical
+from textual.timer import Timer
+from textual.widgets import Footer, Header
 
-from .widgets.status import StatusPanel
-from .widgets.sprite import SpriteWidget
-from .widgets.notifications import NotificationsPanel
+from .ai import FallbackSystem, GameContext, create_client_from_env
+from .engine import GameConfig, GameEngine, StateManager
 from .widgets.chat import ChatLog
 from .widgets.input import CommandInput, CommandsPanel
+from .widgets.notifications import NotificationsPanel
+from .widgets.sprite import SpriteWidget
+from .widgets.status import StatusPanel
 
-from .engine import StateManager, GameEngine, GameConfig
-from .ai import GameContext, create_client_from_env, FallbackSystem
+
+def load_environment() -> None:
+    """Load environment variables from .env file if it exists."""
+    env_file = Path(".env")
+    if env_file.exists():
+        # TODO: Use python-dotenv library for proper .env loading
+        with open(env_file) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, value = line.split("=", 1)
+                    os.environ[key.strip()] = value.strip()
+                    print(f"DEBUG: Loaded {key.strip()}={value.strip()[:10]}...")
+    else:
+        print("DEBUG: .env file not found")
 
 
 class TermagatchiApp(App):
@@ -27,8 +42,11 @@ class TermagatchiApp(App):
     TITLE = "Termagatchi"
     SUB_TITLE = "Your AI-powered terminal pet"
 
-    def __init__(self, save_dir: Optional[Path] = None, **kwargs):
+    def __init__(self, save_dir: Path | None = None, **kwargs):
         super().__init__(**kwargs)
+
+        # Environment variables should be loaded by mise automatically
+        # TODO: Remove manual load_environment() since we're using mise
 
         # Initialize game components
         self.config = GameConfig()
@@ -44,16 +62,16 @@ class TermagatchiApp(App):
             self.ai_available = False
 
         # UI components
-        self.status_panel: Optional[StatusPanel] = None
-        self.sprite_widget: Optional[SpriteWidget] = None
-        self.notifications_panel: Optional[NotificationsPanel] = None
-        self.chat_log: Optional[ChatLog] = None
-        self.command_input: Optional[CommandInput] = None
-        self.commands_panel: Optional[CommandsPanel] = None
+        self.status_panel: StatusPanel | None = None
+        self.sprite_widget: SpriteWidget | None = None
+        self.notifications_panel: NotificationsPanel | None = None
+        self.chat_log: ChatLog | None = None
+        self.command_input: CommandInput | None = None
+        self.commands_panel: CommandsPanel | None = None
 
         # Game timers
-        self.tick_timer: Optional[Timer] = None
-        self.autosave_timer: Optional[Timer] = None
+        self.tick_timer: Timer | None = None
+        self.autosave_timer: Timer | None = None
 
     def compose(self) -> ComposeResult:
         """Compose the main application layout."""
@@ -120,16 +138,12 @@ class TermagatchiApp(App):
         """Start the game tick and autosave timers."""
         # Game tick timer (every 60 seconds)
         self.tick_timer = self.set_interval(
-            self.config.tick_interval_s,
-            self.game_tick,
-            pause=False
+            self.config.tick_interval_s, self.game_tick, pause=False
         )
 
         # Autosave timer (every 30 seconds)
         self.autosave_timer = self.set_interval(
-            self.config.autosave_interval_s,
-            self.autosave,
-            pause=False
+            self.config.autosave_interval_s, self.autosave, pause=False
         )
 
     def game_tick(self) -> None:
@@ -178,7 +192,7 @@ class TermagatchiApp(App):
                 recent_events=self.game_engine.get_recent_events(),
                 last_user_input=user_input,
                 time_of_day=self.get_time_of_day(),
-                pet_name="Termagatchi"
+                pet_name="Termagatchi",
             )
 
             # Get AI response
@@ -186,9 +200,7 @@ class TermagatchiApp(App):
                 response = self.ai_client.get_pet_reply(context)
             else:
                 response = FallbackSystem.get_response(
-                    context.stats,
-                    user_input,
-                    context.time_of_day
+                    context.stats, user_input, context.time_of_day
                 )
 
             # Display response
@@ -321,7 +333,7 @@ class TermagatchiApp(App):
                 self.command_input.focus_input()
 
 
-def run_app(save_dir: Optional[Path] = None) -> None:
+def run_app(save_dir: Path | None = None) -> None:
     """Run the Termagatchi application."""
     app = TermagatchiApp(save_dir=save_dir)
     app.run()

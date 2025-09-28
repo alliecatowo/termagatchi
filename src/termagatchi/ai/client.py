@@ -1,14 +1,14 @@
 """LiteLLM + Instructor client for AI interactions."""
 
-import os
-import json
 import asyncio
+import json
+import os
 
 import instructor
 from openai import OpenAI
 from pydantic import ValidationError
 
-from .schema import PetReply, GameContext, LLMConfig, PetAction
+from .schema import GameContext, LLMConfig, PetAction, PetReply
 
 
 class LLMClient:
@@ -66,8 +66,9 @@ class LLMClient:
         recent_events = context.recent_events[-6:]  # Last 6 events
 
         # Determine pet's overall condition
-        avg_needs = (stats.get("hunger", 50) + stats.get("hygiene", 50) +
-                    stats.get("energy", 50)) / 3
+        avg_needs = (
+            stats.get("hunger", 50) + stats.get("hygiene", 50) + stats.get("energy", 50)
+        ) / 3
 
         condition = "great"
         if avg_needs < 20:
@@ -87,13 +88,13 @@ class LLMClient:
                 "energy": f"{stats.get('energy', 50):.0f}/100",
                 "affection": f"{stats.get('affection', 50):.0f}/100",
                 "health": f"{stats.get('health', 100):.0f}/100",
-                "sleeping": stats.get("sleeping", False)
+                "sleeping": stats.get("sleeping", False),
             },
             "overall_condition": condition,
             "recent_events": recent_events,
             "last_user_said": context.last_user_input,
             "time_of_day": context.time_of_day,
-            "pet_name": context.pet_name
+            "pet_name": context.pet_name,
         }
 
         return (
@@ -115,12 +116,12 @@ class LLMClient:
                 model=self.config.model,
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": context_prompt}
+                    {"role": "user", "content": context_prompt},
                 ],
                 response_model=PetReply,
                 temperature=self.config.temperature,
                 max_tokens=self.config.max_tokens,
-                timeout=self.config.timeout_s
+                timeout=self.config.timeout_s,
             )
 
             return response
@@ -141,12 +142,12 @@ class LLMClient:
                     model=self.config.model,
                     messages=[
                         {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": context_prompt}
+                        {"role": "user", "content": context_prompt},
                     ],
                     response_model=PetReply,
                     temperature=self.config.temperature,
                     max_tokens=self.config.max_tokens,
-                    timeout=self.config.timeout_s
+                    timeout=self.config.timeout_s,
                 )
 
                 return response
@@ -198,8 +199,12 @@ class LLMClient:
                 return PetReply(say="good night!", action=PetAction.NAP)
 
         # Default happy responses based on overall condition
-        avg_stats = (stats.get("hunger", 50) + stats.get("hygiene", 50) +
-                    stats.get("happiness", 50) + stats.get("energy", 50)) / 4
+        avg_stats = (
+            stats.get("hunger", 50)
+            + stats.get("hygiene", 50)
+            + stats.get("happiness", 50)
+            + stats.get("energy", 50)
+        ) / 4
 
         if avg_stats > 70:
             responses = [
@@ -222,6 +227,7 @@ class LLMClient:
 
         # Simple deterministic selection based on timestamp
         import time
+
         index = int(time.time()) % len(responses)
         return responses[index]
 
@@ -232,7 +238,7 @@ class LLMClient:
                 stats={"hunger": 50, "happiness": 50, "energy": 50},
                 recent_events=["test"],
                 last_user_input="hello",
-                time_of_day="day"
+                time_of_day="day",
             )
 
             response = self.get_pet_reply(test_context)
@@ -256,6 +262,6 @@ def create_client_from_env() -> LLMClient:
         timeout_s=int(os.getenv("LLM_TIMEOUT", "4")),
         max_retries=int(os.getenv("LLM_MAX_RETRIES", "2")),
         temperature=float(os.getenv("LLM_TEMPERATURE", "0.7")),
-        max_tokens=int(os.getenv("LLM_MAX_TOKENS", "64"))
+        max_tokens=int(os.getenv("LLM_MAX_TOKENS", "64")),
     )
     return LLMClient(config)

@@ -1,10 +1,10 @@
 """Textual UI widgets for the Termagatchi interface."""
 
-from .status import StatusPanel, StatusBar
-from .sprite import SpriteWidget
-from .notifications import NotificationsPanel, NotificationItem
 from .chat import ChatLog
 from .input import CommandInput, CommandsPanel
+from .notifications import NotificationItem, NotificationsPanel
+from .sprite import SpriteWidget
+from .status import StatusBar, StatusPanel
 
 __all__ = [
     "StatusPanel",
@@ -14,5 +14,5 @@ __all__ = [
     "NotificationItem",
     "ChatLog",
     "CommandInput",
-    "CommandsPanel"
+    "CommandsPanel",
 ]

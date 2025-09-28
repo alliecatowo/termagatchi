@@ -1,13 +1,15 @@
 """Pydantic models for game state and engine data structures."""
 
-from pydantic import BaseModel, Field, field_validator
-from typing import Optional, Dict, List, Any
 from datetime import datetime
 from enum import Enum
+from typing import Any
+
+from pydantic import BaseModel, Field, field_validator
 
 
 class StatType(str, Enum):
     """Types of pet stats that can be tracked."""
+
     HUNGER = "hunger"
     HYGIENE = "hygiene"
     HAPPINESS = "happiness"
@@ -33,7 +35,7 @@ class PetStats(BaseModel):
         """Ensure stats stay within 0-100 range."""
         return max(0.0, min(100.0, v))
 
-    def to_dict(self) -> Dict[str, float]:
+    def to_dict(self) -> dict[str, float]:
         """Convert stats to dictionary for LLM context."""
         return {
             "hunger": self.hunger,
@@ -42,10 +44,10 @@ class PetStats(BaseModel):
             "energy": self.energy,
             "affection": self.affection,
             "health": self.health,
-            "sleeping": self.sleeping
+            "sleeping": self.sleeping,
         }
 
-    def apply_effects(self, effects: Dict[str, float]) -> None:
+    def apply_effects(self, effects: dict[str, float]) -> None:
         """Apply stat changes from items or actions."""
         for stat_name, change in effects.items():
             if hasattr(self, stat_name):
@@ -62,7 +64,7 @@ class GameEvent(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.now)
     event_type: str = Field(..., description="Type of event (command, decay, etc.)")
     description: str = Field(..., description="Human-readable event description")
-    data: Optional[Dict[str, Any]] = Field(default=None, description="Additional event data")
+    data: dict[str, Any] | None = Field(default=None, description="Additional event data")
 
     def __str__(self) -> str:
         return f"[{self.timestamp.strftime('%H:%M')}] {self.description}"
@@ -73,9 +75,8 @@ class ItemDefinition(BaseModel):
 
     name: str = Field(..., description="Display name of the item")
     description: str = Field(..., description="Description of the item")
-    effects: Dict[str, float] = Field(
-        default_factory=dict,
-        description="Stat effects when using this item"
+    effects: dict[str, float] = Field(
+        default_factory=dict, description="Stat effects when using this item"
     )
     cooldown_s: int = Field(default=300, description="Cooldown in seconds before reuse")
 
@@ -87,14 +88,26 @@ class GameConfig(BaseModel):
     hunger_decay: float = Field(default=1.0, description="Hunger decay per tick")
     hygiene_decay: float = Field(default=0.5, description="Hygiene decay per tick")
     energy_decay_awake: float = Field(default=0.5, description="Energy decay when awake")
-    energy_recovery_sleeping: float = Field(default=1.0, description="Energy recovery when sleeping")
+    energy_recovery_sleeping: float = Field(
+        default=1.0, description="Energy recovery when sleeping"
+    )
 
     # Thresholds for negative effects
-    low_hunger_threshold: float = Field(default=40.0, description="Hunger threshold for mood effects")
-    low_hygiene_threshold: float = Field(default=40.0, description="Hygiene threshold for mood effects")
-    critical_hunger_threshold: float = Field(default=20.0, description="Critical hunger for sickness")
-    critical_hygiene_threshold: float = Field(default=20.0, description="Critical hygiene for sickness")
-    critical_energy_threshold: float = Field(default=10.0, description="Critical energy for sickness")
+    low_hunger_threshold: float = Field(
+        default=40.0, description="Hunger threshold for mood effects"
+    )
+    low_hygiene_threshold: float = Field(
+        default=40.0, description="Hygiene threshold for mood effects"
+    )
+    critical_hunger_threshold: float = Field(
+        default=20.0, description="Critical hunger for sickness"
+    )
+    critical_hygiene_threshold: float = Field(
+        default=20.0, description="Critical hygiene for sickness"
+    )
+    critical_energy_threshold: float = Field(
+        default=10.0, description="Critical energy for sickness"
+    )
 
     # Game mechanics
     mood_decay_rate: float = Field(default=0.2, description="Mood decay when needs are low")
@@ -110,22 +123,26 @@ class GameConfig(BaseModel):
 
     # Animation settings
     animation_fps: int = Field(default=8, description="Animation frames per second")
-    animation_duration_ms: int = Field(default=700, description="Animation duration in milliseconds")
+    animation_duration_ms: int = Field(
+        default=700, description="Animation duration in milliseconds"
+    )
 
 
 class GameState(BaseModel):
     """Complete game state for saving and loading."""
 
     stats: PetStats = Field(default_factory=PetStats)
-    events: List[GameEvent] = Field(default_factory=list)
-    chat_history: List[Dict[str, str]] = Field(default_factory=list)
-    notifications: List[str] = Field(default_factory=list)
-    item_cooldowns: Dict[str, datetime] = Field(default_factory=dict)
+    events: list[GameEvent] = Field(default_factory=list)
+    chat_history: list[dict[str, str]] = Field(default_factory=list)
+    notifications: list[str] = Field(default_factory=list)
+    item_cooldowns: dict[str, datetime] = Field(default_factory=dict)
     last_tick: datetime = Field(default_factory=datetime.now)
     created_at: datetime = Field(default_factory=datetime.now)
     total_play_time_s: float = Field(default=0.0)
 
-    def add_event(self, event_type: str, description: str, data: Optional[Dict[str, Any]] = None) -> None:
+    def add_event(
+        self, event_type: str, description: str, data: dict[str, Any] | None = None
+    ) -> None:
         """Add a new event to the game history."""
         event = GameEvent(event_type=event_type, description=description, data=data)
         self.events.append(event)
@@ -136,11 +153,9 @@ class GameState(BaseModel):
 
     def add_chat_message(self, sender: str, message: str) -> None:
         """Add a chat message to the history."""
-        self.chat_history.append({
-            "sender": sender,
-            "message": message,
-            "timestamp": datetime.now().isoformat()
-        })
+        self.chat_history.append(
+            {"sender": sender, "message": message, "timestamp": datetime.now().isoformat()}
+        )
 
         # Keep chat history size manageable
         if len(self.chat_history) > 200:
