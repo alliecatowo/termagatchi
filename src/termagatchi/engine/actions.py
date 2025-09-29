@@ -26,22 +26,34 @@ ACTION_ANIMATIONS: dict[PetAction, ActionAnimation] = {
     PetAction.SMILE: ActionAnimation(
         [
             r"""
-      ╭─────────╮
-     ╱           ╲
-    ╱   ◉     ◉   ╲
-   ╱               ╲
-  ╱     \_____/     ╲
- ╱                   ╲
-╱_____________________╲
+       [yellow]░░░░░░░░░░░░░░░░░░░[/yellow]
+      [yellow]░░░[black]███████████[/black]░░░░░░[/yellow]
+     [yellow]░░[black]███████████████[/black]░░░░[/yellow]
+    [yellow]░░[black]█████████████████[/black]░░[/yellow]
+   [yellow]░░[black]█[/black][red]███[/red][black]███████[/black][red]███[/red][black]█[/black]░░[/yellow]
+  [yellow]░░[black]█[/black][red]███████████[/red][black]█[/black]░░[/yellow]
+ [yellow]░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░[/yellow]
+[yellow]░░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░░[/yellow]
+[yellow]░░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░░[/yellow]
+[yellow]░░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░░[/yellow]
+[yellow]░░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░░[/yellow]
+[yellow]░░░[black]██[/black][red]█████████[/red][black]██[/black]░░░[/yellow]
+[yellow]░░░░[black]███████████████[/black]░░░░[/yellow]
         """.strip(),
             r"""
-      ╭─────────╮
-     ╱           ╲
-    ╱   ◉     ◉   ╲
-   ╱               ╲
-  ╱     \^___^/     ╲
- ╱                   ╲
-╱_____________________╲
+       [yellow]░░░░░░░░░░░░░░░░░░░[/yellow]
+      [yellow]░░░[black]███████████[/black]░░░░░░[/yellow]
+     [yellow]░░[black]███████████████[/black]░░░░[/yellow]
+    [yellow]░░[black]█████████████████[/black]░░[/yellow]
+   [yellow]░░[black]█[/black][red]███[/red][black]███████[/black][red]███[/red][black]█[/black]░░[/yellow]
+  [yellow]░░[black]█[/black][red]███████████[/red][black]█[/black]░░[/yellow]
+ [yellow]░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░[/yellow]
+[yellow]░░░[black]█[/black][red]███[/red][black]█[/black][blue]∪∪∪[/blue][black]█[/black][red]███[/red][black]█[/black]░░░[/yellow]
+[yellow]░░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░░[/yellow]
+[yellow]░░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░░[/yellow]
+[yellow]░░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░░[/yellow]
+[yellow]░░░[black]██[/black][red]█████████[/red][black]██[/black]░░░[/yellow]
+[yellow]░░░░[black]███████████████[/black]░░░░[/yellow]
         """.strip(),
         ],
         fps=4,
@@ -94,12 +106,22 @@ ACTION_ANIMATIONS: dict[PetAction, ActionAnimation] = {
     PetAction.HEART: ActionAnimation(
         [
             r"""
-    ♡ | ○ ○ | ♡
-    - | \_/ | -
+         ╭─────────────╮
+        ╱               ╲
+       ╱    ◉       ◉    ╲
+      ╱                   ╲
+     ╱        \___/        ╲
+    ╱      ♡        ♡       ╲
+   ╱_________________________╲
         """.strip(),
             r"""
-    ♥ | ◉ ◉ | ♥
-    - | \_/ | -
+         ╭─────────────╮
+        ╱               ╲
+       ╱    ♥       ♥    ╲
+      ╱                   ╲
+     ╱        ^_^          ╲
+    ╱      ♥        ♥       ╲
+   ╱_________________________╲
         """.strip(),
         ],
         fps=6,
@@ -107,16 +129,31 @@ ACTION_ANIMATIONS: dict[PetAction, ActionAnimation] = {
     PetAction.WAVE: ActionAnimation(
         [
             r"""
-  ╭─| ○ ○ |─╮
-    | \_/ |
+         ╭─────────────╮
+        ╱               ╲
+       ╱    ◉       ◉    ╲
+      ╱                   ╲
+     ╱        \___/        ╲
+    ╱          o            ╲
+   ╱_________________________╲
         """.strip(),
             r"""
-    | ○ ○ |─╮
-    | \_/ |
+         ╭─────────────╮
+        ╱               ╲
+       ╱    ◉       ◉    ╲
+      ╱                   ╲
+     ╱        \___/        ╲
+    ╱         o             ╲
+   ╱_________________________╲
         """.strip(),
             r"""
-  ╭─| ○ ○ |
-    | \_/ |
+         ╭─────────────╮
+        ╱               ╲
+       ╱    ◉       ◉    ╲
+      ╱                   ╲
+     ╱        \___/        ╲
+    ╱                       ╲
+   ╱_________________________╲
         """.strip(),
         ],
         fps=6,
@@ -124,16 +161,31 @@ ACTION_ANIMATIONS: dict[PetAction, ActionAnimation] = {
     PetAction.WIGGLE: ActionAnimation(
         [
             r"""
-  ╱ | ○ ○ | ╲
-    | \_/ |
+         ╭─────────────╮
+        ╱               ╲
+       ╱    ◉       ◉    ╲
+      ╱                   ╲
+     ╱        \___/        ╲
+    ╱      ~         ~      ╲
+   ╱_________________________╲
         """.strip(),
             r"""
-  ╲ | ○ ○ | ╱
-    | \_/ |
+         ╭─────────────╮
+        ╱               ╲
+       ╱    ◉       ◉    ╲
+      ╱                   ╲
+     ╱        \___/        ╲
+    ╱     ~         ~       ╲
+   ╱_________________________╲
         """.strip(),
             r"""
-    | ○ ○ |
-    | \_/ |
+         ╭─────────────╮
+        ╱               ╲
+       ╱    ◉       ◉    ╲
+      ╱                   ╲
+     ╱        \___/        ╲
+    ╱                       ╲
+   ╱_________________________╲
         """.strip(),
         ],
         fps=10,
@@ -237,12 +289,22 @@ ACTION_ANIMATIONS: dict[PetAction, ActionAnimation] = {
     PetAction.SAD: ActionAnimation(
         [
             r"""
-    | ○ ○ |
-    | /‾\ |
+         ╭─────────────╮
+        ╱               ╲
+       ╱    ◉       ◉    ╲
+      ╱                   ╲
+     ╱        /‾‾‾\        ╲
+    ╱                       ╲
+   ╱_________________________╲
         """.strip(),
             r"""
-    | ◦ ◦ |
-    | /‾\ |
+         ╭─────────────╮
+        ╱               ╲
+       ╱    ◦       ◦    ╲
+      ╱                   ╲
+     ╱        /‾‾‾\        ╲
+    ╱                       ╲
+   ╱_________________________╲
         """.strip(),
         ],
         fps=3,
@@ -367,4 +429,18 @@ def get_action_animation(action: PetAction) -> ActionAnimation:
 
 def get_idle_frame() -> str:
     """Get the default idle frame for the pet."""
-    return ACTION_ANIMATIONS[PetAction.SMILE].frames[0].frame
+    return r"""
+       [yellow]░░░░░░░░░░░░░░░░░░░[/yellow]
+      [yellow]░░░[black]███████████[/black]░░░░░░[/yellow]
+     [yellow]░░[black]███████████████[/black]░░░░[/yellow]
+    [yellow]░░[black]█████████████████[/black]░░[/yellow]
+   [yellow]░░[black]█[/black][red]███[/red][black]███████[/black][red]███[/red][black]█[/black]░░[/yellow]
+  [yellow]░░[black]█[/black][red]███████████[/red][black]█[/black]░░[/yellow]
+ [yellow]░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░[/yellow]
+[yellow]░░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░░[/yellow]
+[yellow]░░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░░[/yellow]
+[yellow]░░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░░[/yellow]
+[yellow]░░░[black]█[/black][red]███[/red][black]█[/black][blue]███[/blue][black]█[/black][red]███[/red][black]█[/black]░░░[/yellow]
+[yellow]░░░[black]██[/black][red]█████████[/red][black]██[/black]░░░[/yellow]
+[yellow]░░░░[black]███████████████[/black]░░░░[/yellow]
+    """.strip()

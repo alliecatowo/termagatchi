@@ -35,7 +35,7 @@ class NotificationItem(Static):
             self.add_class("fading-notification")
             await asyncio.sleep(2)  # Fade duration
             # Request removal
-            self.parent.remove_notification(self)
+            self.parent.parent.remove_notification(self)
         except asyncio.CancelledError:
             pass
 

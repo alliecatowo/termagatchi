@@ -34,7 +34,7 @@ class StateManager:
             # Prepare state data for serialization
             state_dict = state.model_dump()
 
-            # Convert datetime objects to ISO strings
+            # Convert datetime objects to ISO strings for ALL fields
             state_dict = self._serialize_datetimes(state_dict)
 
             # Write to file

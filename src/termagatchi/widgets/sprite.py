@@ -34,11 +34,9 @@ class SpriteWidget(Static):
         """Update the sprite display."""
         sprite_display = self.query_one("#sprite-display", Static)
 
-        # Create rich text with golden color
-        text = Text(self.current_frame, style="bold #ffd700")
-        aligned_text = Align.center(text)
-
-        sprite_display.update(aligned_text)
+        # Create rich text with markup support
+        text = Text.from_markup(self.current_frame, style="bold")
+        sprite_display.update(text)
 
     @work(exclusive=True)
     async def play_animation(self, action: PetAction) -> None:

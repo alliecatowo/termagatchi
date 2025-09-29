@@ -19,16 +19,14 @@ class LLMClient:
         self._setup_client()
 
     def _setup_client(self):
-        """Set up the Instructor client with LiteLLM backend."""
-        # For LiteLLM compatibility, we use OpenAI client interface
-        # LiteLLM routes based on model name and environment variables
-        openai_client = OpenAI(
-            api_key=os.getenv("OPENAI_API_KEY", "dummy"),  # LiteLLM handles provider keys
-            base_url=os.getenv("OPENAI_API_BASE"),  # For Ollama/local models
-        )
-
-        # Wrap with Instructor for structured outputs
-        self.client = instructor.from_openai(openai_client, mode="json_schema")
+        """Set up the Instructor client."""
+        provider_model = f"{self.config.provider}/{self.config.model}"
+        if self.config.provider == "google":
+            self.client = instructor.from_provider(provider_model, mode=instructor.Mode.GEMINI_JSON)
+            self.use_temperature = False  # Gemini doesn't support temperature in the same way
+        else:
+            self.client = instructor.from_provider(provider_model, mode=instructor.Mode.JSON)
+            self.use_temperature = True
 
     def _build_system_prompt(self) -> str:
         """Build the system prompt for the pet."""
@@ -110,18 +108,27 @@ class LLMClient:
             system_prompt = self._build_system_prompt()
             context_prompt = self._build_context_prompt(context)
 
-            # Use LiteLLM for provider-agnostic completion
-            response = await asyncio.to_thread(
-                self.client.chat.completions.create,
-                model=self.config.model,
-                messages=[
+            # Use instructor for completion
+            kwargs = {
+                "model": self.config.model,
+                "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": context_prompt},
                 ],
-                response_model=PetReply,
-                temperature=self.config.temperature,
-                max_tokens=self.config.max_tokens,
-                timeout=self.config.timeout_s,
+                "response_model": PetReply,
+            }
+
+            # Only add max_tokens and timeout for non-Google providers
+            if self.config.provider != "google":
+                kwargs["max_tokens"] = self.config.max_tokens
+                kwargs["timeout"] = self.config.timeout_s
+
+            if self.use_temperature:
+                kwargs["temperature"] = self.config.temperature
+
+            response = await asyncio.to_thread(
+                self.client.chat.completions.create,
+                **kwargs
             )
 
             return response
@@ -138,17 +145,24 @@ class LLMClient:
                 context_prompt = self._build_context_prompt(context)
 
                 # Use the Instructor client directly for synchronous calls
-                response = self.client.chat.completions.create(
-                    model=self.config.model,
-                    messages=[
+                kwargs = {
+                    "model": self.config.model,
+                    "messages": [
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": context_prompt},
                     ],
-                    response_model=PetReply,
-                    temperature=self.config.temperature,
-                    max_tokens=self.config.max_tokens,
-                    timeout=self.config.timeout_s,
-                )
+                    "response_model": PetReply,
+                }
+
+                # Only add max_tokens and timeout for non-Google providers
+                if self.config.provider != "google":
+                    kwargs["max_tokens"] = self.config.max_tokens
+                    kwargs["timeout"] = self.config.timeout_s
+
+                if self.use_temperature:
+                    kwargs["temperature"] = self.config.temperature
+
+                response = self.client.chat.completions.create(**kwargs)
 
                 return response
 
@@ -233,6 +247,7 @@ class LLMClient:
 
     def test_connection(self) -> bool:
         """Test if the LLM connection is working."""
+        print("Testing AI connection...")
         try:
             test_context = GameContext(
                 stats={"hunger": 50, "happiness": 50, "energy": 50},
@@ -242,10 +257,11 @@ class LLMClient:
             )
 
             response = self.get_pet_reply(test_context)
+            print("AI connection test successful")
             return isinstance(response, PetReply)
 
         except Exception as e:
-            print(f"Connection test failed: {e}")
+            print(f"AI Connection test failed: {e}")
             return False
 
 

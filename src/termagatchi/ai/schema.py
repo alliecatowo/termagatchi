@@ -55,7 +55,7 @@ class PetReply(BaseModel):
             return " ".join(words[:12])
         return v.strip()
 
-    @field_validator("action")
+    @field_validator("action", mode="before")
     @classmethod
     def validate_action(cls, v):
         """Ensure the action is a valid PetAction."""

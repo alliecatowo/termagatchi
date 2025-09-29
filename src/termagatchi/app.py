@@ -1,6 +1,7 @@
 """Main Textual application for Termagatchi."""
 
 import os
+import tomllib
 from datetime import datetime
 from pathlib import Path
 
@@ -10,7 +11,7 @@ from textual.containers import Container, Horizontal, Vertical
 from textual.timer import Timer
 from textual.widgets import Footer, Header
 
-from .ai import FallbackSystem, GameContext, create_client_from_env
+from .ai import FallbackSystem, GameContext, LLMConfig, create_client_from_config, create_client_from_env
 from .engine import GameConfig, GameEngine, StateManager
 from .widgets.chat import ChatLog
 from .widgets.input import CommandInput, CommandsPanel
@@ -35,6 +36,35 @@ def load_environment() -> None:
         print("DEBUG: .env file not found")
 
 
+def load_llm_config() -> LLMConfig:
+    """Load LLM configuration from config file or environment."""
+    config_dir = Path.home() / ".termagatchi"
+    config_file = config_dir / "config.toml"
+
+    if config_file.exists():
+        try:
+            with open(config_file, "rb") as f:
+                data = tomllib.load(f)
+            if "lm" in data:
+                lm_config = data["lm"]
+                print(f"Loaded config from file: {lm_config}")
+                return LLMConfig(**lm_config)
+        except Exception as e:
+            print(f"Error loading config: {e}")
+
+    # Fall back to environment variables
+    config = LLMConfig(
+        provider=os.getenv("LLM_PROVIDER", "deterministic"),
+        model=os.getenv("LLM_MODEL", "gpt-4o-mini"),
+        timeout_s=int(os.getenv("LLM_TIMEOUT", "4")),
+        max_retries=int(os.getenv("LLM_MAX_RETRIES", "2")),
+        temperature=float(os.getenv("LLM_TEMPERATURE", "0.7")),
+        max_tokens=int(os.getenv("LLM_MAX_TOKENS", "64")),
+    )
+    print(f"Using fallback config: {config}")
+    return config
+
+
 class TermagatchiApp(App):
     """Main Termagatchi application."""
 
@@ -55,7 +85,8 @@ class TermagatchiApp(App):
 
         # Initialize AI client
         try:
-            self.ai_client = create_client_from_env()
+            llm_config = load_llm_config()
+            self.ai_client = create_client_from_config(llm_config)
             self.ai_available = self.ai_client.test_connection()
         except Exception:
             self.ai_client = None
@@ -79,32 +110,27 @@ class TermagatchiApp(App):
 
         # Main layout container
         with Container(id="main-container"):
-            # Top row: Status bars
-            with Container(id="status-row"):
+            # Top section: Status bars with progress bars
+            with Horizontal(id="status-section"):
                 yield StatusPanel(id="status-panel")
-
-            # Middle row: Sprite and Notifications
-            with Horizontal(id="middle-row"):
-                # Left: Sprite area
-                with Container(id="sprite-area", classes="border-cyan"):
-                    yield SpriteWidget(id="sprite")
-
-                # Right: Notifications
-                with Container(id="notifications-area", classes="border-cyan"):
+                # Spacer for notifications
+                with Container(id="notifications-spacer"):
                     yield NotificationsPanel(id="notifications")
 
-            # Bottom row: Chat and Commands
-            with Horizontal(id="bottom-row"):
-                # Left: Chat log
-                with Vertical(id="chat-area", classes="border-cyan"):
+            # Main content: Sprite (left) and Chat (right/bottom)
+            with Horizontal(id="content-section"):
+                # Left: Large sprite area
+                with Container(id="sprite-container", classes="sprite-main"):
+                    yield SpriteWidget(id="sprite")
+
+                # Right: Chat area (full height)
+                with Container(id="chat-container"):
                     yield ChatLog(id="chat-log")
-                    yield CommandInput(id="command-input")
 
-                # Right: Commands panel
-                with Container(id="commands-area", classes="border-cyan"):
-                    yield CommandsPanel(id="commands-panel")
+            # Bottom: Input area
+            with Container(id="input-section"):
+                yield CommandInput(id="command-input")
 
-        yield Footer()
 
     def on_mount(self) -> None:
         """Initialize the application when mounted."""
@@ -114,7 +140,6 @@ class TermagatchiApp(App):
         self.notifications_panel = self.query_one("#notifications", NotificationsPanel)
         self.chat_log = self.query_one("#chat-log", ChatLog)
         self.command_input = self.query_one("#command-input", CommandInput)
-        self.commands_panel = self.query_one("#commands-panel", CommandsPanel)
 
         # Load saved chat history
         self.chat_log.load_chat_history(self.game_engine.state.chat_history)
@@ -133,6 +158,10 @@ class TermagatchiApp(App):
 
         # Show greeting
         self.show_greeting()
+
+        # Focus input
+        if self.command_input:
+            self.set_focus(self.command_input.input_field)
 
     def start_timers(self) -> None:
         """Start the game tick and autosave timers."""
