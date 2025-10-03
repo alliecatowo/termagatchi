@@ -14,7 +14,7 @@ from textual.widgets import Footer, Header
 from .ai import FallbackSystem, GameContext, LLMConfig, create_client_from_config, create_client_from_env
 from .engine import GameConfig, GameEngine, StateManager
 from .widgets.chat import ChatLog
-from .widgets.input import CommandInput, CommandsPanel
+from .widgets.input import CommandInput
 from .widgets.notifications import NotificationsPanel
 from .widgets.sprite import SpriteWidget
 from .widgets.status import StatusPanel
@@ -98,11 +98,12 @@ class TermagatchiApp(App):
         self.notifications_panel: NotificationsPanel | None = None
         self.chat_log: ChatLog | None = None
         self.command_input: CommandInput | None = None
-        self.commands_panel: CommandsPanel | None = None
 
         # Game timers
         self.tick_timer: Timer | None = None
         self.autosave_timer: Timer | None = None
+        self.idle_animation_timer: Timer | None = None
+        self.thought_timer: Timer | None = None
 
     def compose(self) -> ComposeResult:
         """Compose the main application layout."""
@@ -120,7 +121,7 @@ class TermagatchiApp(App):
             # Main content: Sprite (left) and Chat (right/bottom)
             with Horizontal(id="content-section"):
                 # Left: Large sprite area
-                with Container(id="sprite-container", classes="sprite-main"):
+                with Container(id="sprite-container"):
                     yield SpriteWidget(id="sprite")
 
                 # Right: Chat area (full height)
@@ -175,6 +176,16 @@ class TermagatchiApp(App):
             self.config.autosave_interval_s, self.autosave, pause=False
         )
 
+        # Idle animation timer (every 8-15 seconds)
+        self.idle_animation_timer = self.set_interval(
+            8 + (self.game_engine.state.stats.happiness / 10), self.idle_animation, pause=False
+        )
+
+        # Thought timer (every 20-40 seconds)
+        self.thought_timer = self.set_interval(
+            20 + (self.game_engine.state.stats.energy / 5), self.random_thought, pause=False
+        )
+
     def game_tick(self) -> None:
         """Process one game tick."""
         self.game_engine.tick()
@@ -192,6 +203,45 @@ class TermagatchiApp(App):
         if self.game_engine.save():
             self.notifications_panel.add_notification("Game saved")
 
+    def idle_animation(self) -> None:
+        """Trigger a random idle animation for the pet."""
+        import random
+        from .ai.schema import PetAction
+
+        # Only play idle animations if not sleeping
+        if self.game_engine.state.stats.sleeping:
+            return
+
+        # Random idle actions
+        idle_actions = [
+            PetAction.WIGGLE,
+            PetAction.WAVE,
+            PetAction.SMILE,
+            PetAction.THINK,
+        ]
+
+        action = random.choice(idle_actions)
+        self.sprite_widget.play_animation(action)
+
+        # Add a subtle visual indicator that the pet is active
+        if self.sprite_widget:
+            # This could trigger a small animation or effect
+            pass
+
+    def random_thought(self) -> None:
+        """Generate and display a random thought from the pet."""
+        from .ai import FallbackSystem
+
+        # Get a random thought based on current state
+        thought = FallbackSystem.get_random_thought(self.game_engine.get_current_stats())
+
+        if thought:
+            self.chat_log.add_pet_message(thought.say, thought.action.value)
+            self.sprite_widget.play_animation(thought.action)
+
+            # Save to chat history
+            self.game_engine.add_chat_message("pet", thought.say)
+
     def update_ui(self) -> None:
         """Update all UI components with current game state."""
         if not self.status_panel:
@@ -200,10 +250,9 @@ class TermagatchiApp(App):
         # Update status bars
         self.status_panel.update_stats(self.game_engine.state.stats)
 
-        # Update sprite if sleeping
-        if self.game_engine.state.stats.sleeping:
-            # This will be handled by animation system
-            pass
+        # Update sprite animation engine with current stats
+        if self.sprite_widget:
+            self.sprite_widget.update_stats(self.game_engine.state.stats)
 
     def show_greeting(self) -> None:
         """Show initial greeting from the pet."""
@@ -215,6 +264,13 @@ class TermagatchiApp(App):
     async def process_ai_response(self, user_input: str) -> None:
         """Process user input and get AI response."""
         try:
+            # Start thinking animation
+            if self.sprite_widget:
+                self.sprite_widget.animation_engine.start_thinking()
+
+            # Add thinking indicator to chat
+            self.chat_log.add_thinking_indicator()
+
             # Build context for AI
             context = GameContext(
                 stats=self.game_engine.get_current_stats(),
@@ -232,6 +288,10 @@ class TermagatchiApp(App):
                     context.stats, user_input, context.time_of_day
                 )
 
+            # Stop thinking animation
+            if self.sprite_widget:
+                self.sprite_widget.animation_engine.stop_thinking()
+
             # Display response
             self.chat_log.add_pet_message(response.say, response.action.value)
             self.sprite_widget.play_animation(response.action)
@@ -240,6 +300,10 @@ class TermagatchiApp(App):
             self.game_engine.add_chat_message("pet", response.say)
 
         except Exception as e:
+            # Stop thinking animation on error
+            if self.sprite_widget:
+                self.sprite_widget.animation_engine.stop_thinking()
+
             self.chat_log.add_error_message(f"AI error: {e}")
             # Use fallback
             fallback = FallbackSystem.get_error_response()

@@ -224,3 +224,71 @@ class FallbackSystem:
         ]
         say, action = random.choice(error_responses)
         return PetReply(say=say, action=action)
+
+    @classmethod
+    def get_random_thought(cls, stats: dict[str, Any]) -> PetReply | None:
+        """Get a random thought bubble based on current pet state."""
+        # Extract stats with defaults
+        happiness = stats.get("happiness", 50)
+        energy = stats.get("energy", 50)
+        hunger = stats.get("hunger", 50)
+        affection = stats.get("affection", 50)
+
+        # Random thoughts based on current state
+        thoughts = []
+
+        # High affection thoughts
+        if affection > 70:
+            thoughts.extend([
+                ("love my human!", PetAction.HEART),
+                ("best friend ever!", PetAction.BLUSH),
+                ("so much love!", PetAction.HEART),
+            ])
+
+        # Happy thoughts
+        if happiness > 70:
+            thoughts.extend([
+                ("life is good!", PetAction.SMILE),
+                ("feeling great!", PetAction.JUMP),
+                ("happy happy!", PetAction.WIGGLE),
+            ])
+
+        # Energetic thoughts
+        if energy > 70:
+            thoughts.extend([
+                ("full of energy!", PetAction.JUMP),
+                ("ready to play!", PetAction.PLAY),
+                ("zoomies time!", PetAction.WIGGLE),
+            ])
+
+        # Hungry thoughts
+        if hunger < 40:
+            thoughts.extend([
+                ("getting hungry...", PetAction.SAD),
+                ("need a snack", PetAction.THINK),
+                ("tummy rumbling", PetAction.CONFUSED),
+            ])
+
+        # Low energy thoughts
+        if energy < 30:
+            thoughts.extend([
+                ("feeling sleepy...", PetAction.NAP),
+                ("need a nap", PetAction.SLEEPING),
+                ("tired pet", PetAction.SAD),
+            ])
+
+        # Default thoughts if no specific state
+        if not thoughts:
+            thoughts.extend([
+                ("wondering...", PetAction.THINK),
+                ("what's next?", PetAction.CONFUSED),
+                ("thinking...", PetAction.THINK),
+                ("nice day!", PetAction.SMILE),
+            ])
+
+        # Return a random thought or None if no thoughts available
+        if thoughts:
+            say, action = random.choice(thoughts)
+            return PetReply(say=say, action=action)
+
+        return None

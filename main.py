@@ -1,5 +1,8 @@
+from src.termagatchi.app import run_app
+
+
 def main():
-    print("Hello from termagatchi!")
+    run_app()
 
 
 if __name__ == "__main__":

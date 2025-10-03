@@ -133,7 +133,7 @@ class GameState(BaseModel):
 
     stats: PetStats = Field(default_factory=PetStats)
     events: list[GameEvent] = Field(default_factory=list)
-    chat_history: list[dict[str, str]] = Field(default_factory=list)
+    chat_history: list[dict[str, Any]] = Field(default_factory=list)
     notifications: list[str] = Field(default_factory=list)
     item_cooldowns: dict[str, datetime] = Field(default_factory=dict)
     last_tick: datetime = Field(default_factory=datetime.now)

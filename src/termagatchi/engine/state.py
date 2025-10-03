@@ -110,7 +110,18 @@ class StateManager:
                     continue
             return data
         elif isinstance(data, dict):
-            return {key: self._deserialize_datetimes(value) for key, value in data.items()}
+            # Special handling for chat_history - keep timestamps as strings
+            if "chat_history" in data:
+                result = {}
+                for key, value in data.items():
+                    if key == "chat_history":
+                        # Keep chat_history timestamps as strings for the UI
+                        result[key] = value
+                    else:
+                        result[key] = self._deserialize_datetimes(value)
+                return result
+            else:
+                return {key: self._deserialize_datetimes(value) for key, value in data.items()}
         elif isinstance(data, list):
             return [self._deserialize_datetimes(item) for item in data]
         else:

@@ -91,13 +91,17 @@ class ChatLog(Static):
             timestamp_str = entry.get("timestamp", "")
 
             try:
-                # Parse timestamp if available
+                # Parse timestamp if available (handle both string and datetime objects)
                 if timestamp_str:
-                    timestamp = datetime.fromisoformat(timestamp_str)
+                    if isinstance(timestamp_str, str):
+                        timestamp = datetime.fromisoformat(timestamp_str)
+                    else:
+                        # It's already a datetime object
+                        timestamp = timestamp_str
                     time_str = timestamp.strftime("%H:%M")
                 else:
                     time_str = "??:??"
-            except ValueError:
+            except (ValueError, TypeError):
                 time_str = "??:??"
 
             if sender == "user":
@@ -137,3 +141,19 @@ class ChatLog(Static):
         """Get the number of visible lines in the chat log."""
         # TODO: Fix accessing private _content attribute - use proper API
         return len(self._log._content)
+
+    def add_thinking_indicator(self) -> None:
+        """Add a thinking indicator to show the pet is processing."""
+        thinking_text = Text()
+        thinking_text.append("tama: ", style="#ffd700 bold")
+        thinking_text.append("💭 thinking", style="#ffd700 italic")
+        thinking_text.append("...", style="#ffd700 dim italic")
+
+        self._log.write(thinking_text)
+        self._scroll_to_bottom()
+
+    def remove_last_message(self) -> None:
+        """Remove the last message (useful for removing thinking indicator)."""
+        # This is a workaround since RichLog doesn't have a direct way to remove content
+        # We'll need to track this differently or use a different approach
+        pass

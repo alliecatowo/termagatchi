@@ -123,8 +123,12 @@ class CommandInput(Static):
 
         self.completion_container.remove_children()
 
+        # Add title
+        title = Static("COMMANDS", classes="completion-title")
+        self.completion_container.mount(title)
+
         # Add completion items
-        for i, completion in enumerate(completions[:5]):  # Show max 5 suggestions
+        for i, completion in enumerate(completions[:6]):  # Show max 6 suggestions
             item = Static(completion, classes=f"completion-item {'selected' if i == 0 else ''}")
             self.completion_container.mount(item)
 
